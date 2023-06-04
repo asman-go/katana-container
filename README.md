@@ -4,14 +4,19 @@ Goal: prepare katana to publish in the YCloud.
 
 [katana](https://github.com/projectdiscovery/katana)
 
-Скорее всего: 
+Запускаем python wrapper в контейнере, который забирает с s3 список таргетов и запускает katana. Дожидается выполнения и отправляет результат в s3.
 
-1. мы хотим неизменный контейнер
-2. маунтим диск (volume) с нашими настройками
-3. запускаем контейнер, он забирает информацию с диска
-
-С учетом, что будем поднимать на серверлесс, возможно будет тащить скриптом из s3 все настройки в  контейнер и запускать (триггер будет этим заниматься)
-
-## Python wrapper
+## Why do we need the python wrapper
 
 Так как мы не можем создавать конфиги наподобие docker compose (serverless контейнеры не дружат с дисками, а k8s поднимать дорого), то нужен python-обертка, которая возьмет секреты s3, заберет конфиг, запустит katana, а затем положит результат на s3.
+
+## Environments
+
+```dotenv
+KATANA_S3_ENDPOINT=https://storage.yandexcloud.net/
+KATANA_BUCKET_NAME=example-bucket
+KATANA_BUCKET_INPUT_FILE=example.com/input.txt
+KATANA_BUCKET_OUTPUT_FILE=example.com/output.txt
+S3_ACCESS_KEY=<YOUR-S3-ACCESS-KEY>
+S3_SECRET_KEY=<YOUR-S3-SECRET-TOKEN>
+```
