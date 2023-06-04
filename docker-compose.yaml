@@ -5,12 +5,12 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-    command: -config katana.yaml
+    env_file:
+      - .env
     restart: on-failure
     container_name: katana-crawler
     volumes:
-      - ./config:/home/katana  # Конфигурация katana
       - type: bind  # Для результатов
         source: ./output
-        target: /home/output
-    # tty: true
+        target: /home/katana/output
+    tty: true

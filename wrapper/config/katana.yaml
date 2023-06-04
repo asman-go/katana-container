@@ -36,7 +36,7 @@ rate-limit: 5  # maximum requests to send per second (default 150)
 rate-limit-minute: 100  # maximum number of requests to send per minute
 
 # OUTPUT
-output: /home/output/output.txt  # file to write output to
+output: output.txt  # file to write output to
 # store-response: true  # store http requests/responses, -store-response option is not supported in -headless mode.
 # store-response-dir: requests  # store http requests/responses to custom directory
 json: true  # write output in JSONL(ines) format
