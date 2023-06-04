@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  katana:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command: -config katana.yaml
+    restart: on-failure
+    container_name: katana-crawler
+    volumes:
+      - ./config:/home/katana  # Конфигурация katana
+      - type: bind  # Для результатов
+        source: ./output
+        target: /home/output
+    # tty: true

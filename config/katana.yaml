@@ -1,0 +1,44 @@
+# INPUT
+list: files/input.txt
+
+# CONFIGURATION
+
+depth: 3  # maximum depth to crawl (default 3)
+js-crawl: true  # enable endpoint parsing / crawling in javascript file
+crawl-duration: 60  # maximum duration to crawl the target for (seconds)
+known-files: all  # enable crawling of known files (all,robotstxt,sitemapxml)
+max-response-size: 2097152  # maximum response size to read (default 9223372036854775807)
+timeout: 10  # time to wait for request in seconds (default 10)
+automatic-form-fill: false  # enable automatic form filling (experimental)
+# proxy: test.com:8888  # http/socks5 proxy to use
+# headers: # custom header/cookie to include in request
+# - X-Custom-Value: We are h1
+ignore-query-params: true  # Ignore crawling same path with different query-param values
+
+# HEADLESS
+headless: false  # enable headless hybrid crawling (experimental)
+# headless-options:  --disable-gpu,proxy-server=http://127.0.0.1:8080  # start headless chrome with additional options
+
+# SCOPE
+# crawl-scope: files/crawl-scope.txt  # in scope url regex to be followed by crawler
+crawl-out-scope: files/crawl-out-scope.txt  # out of scope url regex to be excluded by crawler
+field-scope: fqdn  # pre-defined scope field (dn,rdn,fqdn) (default "rdn")
+display-out-scope: true  # display external endpoint from scoped crawling
+
+# FILTER
+store-field: url,path,fqdn,ufile,file,dir,udir
+
+# RATE-LIMIT
+concurrency: 10  # number of concurrent fetchers to use (default 10)
+parallelism: 10  # number of concurrent inputs to process (default 10)
+# delay: 0  # request delay between each request in seconds
+rate-limit: 5  # maximum requests to send per second (default 150)
+rate-limit-minute: 100  # maximum number of requests to send per minute
+
+# OUTPUT
+output: /home/output/output.txt  # file to write output to
+# store-response: true  # store http requests/responses, -store-response option is not supported in -headless mode.
+# store-response-dir: requests  # store http requests/responses to custom directory
+json: true  # write output in JSONL(ines) format
+no-color: true  # disable output content coloring (ANSI escape codes)
+silent: true  # display output only
