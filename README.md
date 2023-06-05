@@ -15,8 +15,13 @@ Goal: prepare katana to publish in the YCloud.
 ```dotenv
 KATANA_S3_ENDPOINT=https://storage.yandexcloud.net/
 KATANA_BUCKET_NAME=example-bucket
-KATANA_BUCKET_INPUT_FILE=example.com/input.txt
-KATANA_BUCKET_OUTPUT_FILE=example.com/output.txt
 S3_ACCESS_KEY=<YOUR-S3-ACCESS-KEY>
 S3_SECRET_KEY=<YOUR-S3-SECRET-TOKEN>
+PORT=80
+```
+
+## Run
+
+```
+http://localhost:PORT/run?campaigh=example.com
 ```
