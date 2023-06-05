@@ -9,8 +9,5 @@ services:
       - .env
     restart: on-failure
     container_name: katana-crawler
-    volumes:
-      - type: bind  # Для результатов
-        source: ./output
-        target: /home/katana/output
-    tty: true
+    ports:
+      - 8090:80

@@ -1,18 +1,25 @@
 import boto3
+from fastapi import FastAPI
 import logging
 import pathlib
 import pydantic
 import subprocess
+import uvicorn
+
+
+INPUT_FILE_NAME = 'input.txt'
+OUTPUT_FILE_NAME = 'output.txt'
+CONFIG_FILE_NAME = 'katana.yaml'
 
 
 class Config(pydantic.BaseSettings):
     KATANA_S3_ENDPOINT: str
     KATANA_BUCKET_NAME: str
-    KATANA_BUCKET_INPUT_FILE: str
-    KATANA_BUCKET_OUTPUT_FILE: str
 
     S3_ACCESS_KEY: str
     S3_SECRET_KEY: str
+
+    PORT: int
 
     class Config:
         env_file = '.env'
@@ -29,11 +36,11 @@ def download_folder(bucket, directory: str, config: Config):
         bucket.download_file(obj.key, target)
 
 
-if __name__ == '__main__':
+async def run_campaigh(campaign: str, config: Config):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
     logger = logging.getLogger(__name__)
-    config = Config()
-    INPUT_FILE_PATH = pathlib.Path('files', 'input.txt')
+
+    INPUT_FILE_PATH = pathlib.Path('files', INPUT_FILE_NAME)
 
     s3 = boto3.client(
         's3',
@@ -41,10 +48,11 @@ if __name__ == '__main__':
         aws_access_key_id=config.S3_ACCESS_KEY,
         aws_secret_access_key=config.S3_SECRET_KEY,
     )
+
     # bucket = s3.Bucket(config.KATANA_BUCKET_NAME)
     s3.download_file(
         config.KATANA_BUCKET_NAME,
-        config.KATANA_BUCKET_INPUT_FILE,
+        f'{campaign}/{INPUT_FILE_NAME}',
         INPUT_FILE_PATH
     )
     if INPUT_FILE_PATH.exists():
@@ -52,13 +60,35 @@ if __name__ == '__main__':
             logger.info(f'Downloaded input list: {input_stream.readlines()}')
 
     logger.info('Starting Katana')
-    subprocess.check_output(['katana', '-config', pathlib.Path('katana.yaml')])
+    subprocess.check_output(['katana', '-config', pathlib.Path(CONFIG_FILE_NAME)])
     logger.info('Katana has finished')
 
-    output_file = pathlib.Path('output.txt')
+    output_file = pathlib.Path(OUTPUT_FILE_NAME)
     if output_file.exists():
         logger.info('Starting upload output file to s3 bucket')
-        s3.upload_file(output_file, config.KATANA_BUCKET_NAME, config.KATANA_BUCKET_OUTPUT_FILE)
+        s3.upload_file(output_file, config.KATANA_BUCKET_NAME, f'{campaign}/{OUTPUT_FILE_NAME}')
         logger.info('Output file was uploaded')
+        return True
     else:
         logger.error('Output file was not created')
+        return False
+
+
+app = FastAPI()
+config = Config()
+
+
+@app.get("/healthcheck")
+async def healthcheck():
+    return {"Status": "OK"}
+
+
+@app.get("/run")
+async def read_root(campaigh: str):
+    result = await run_campaigh(campaigh, config)
+
+    return {"Status": result}
+
+
+if __name__ == '__main__':
+    uvicorn.run("main:app", port=config.PORT, host='0.0.0.0', log_level="info")
