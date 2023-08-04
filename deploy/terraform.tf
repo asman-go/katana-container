@@ -5,18 +5,9 @@ terraform {
         }
         docker = {
             source = "kreuzwerker/docker"
-            version = "~> 3.0.1"
+            // version = "~> 3.0.1"
         }
     }
 
     required_version = ">= 0.13"
 }
-
-provider "docker" { 
-    registry_auth {
-        address = "cr.yandex"
-        username = "json_key"
-        password = var.authorization-key.private_key
-    }
-}
-
